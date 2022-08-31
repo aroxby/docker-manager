@@ -1,0 +1,75 @@
+#!/bin/sh -e
+
+(
+    mkdir /dst
+    cd /dst
+    7z x /src/alpine-virt-${alpine_version}-x86_64.iso > /dev/null
+    rm -rf [BOOT]
+)
+
+mkdir /tmp/chroot && tar -C /tmp/chroot -xf /src/alpine-minirootfs-${alpine_version}-x86_64.tar.gz
+cp /etc/resolv.conf /tmp/chroot/etc
+
+chroot /tmp/chroot sh << CHROOT
+apk update
+apk add alpine-conf sudo openssh busybox-initscripts
+
+touch /etc/.default_boot_services
+
+cat > /etc/network/interfaces <<EOF
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+
+auto eth1
+iface eth1 inet dhcp
+EOF
+
+ln -s /etc/init.d/networking /etc/runlevels/default/
+ln -s /etc/init.d/sshd /etc/runlevels/default/
+
+adduser -D -s /bin/sh alpine
+addgroup alpine wheel
+
+mkdir /home/alpine/.ssh
+chmod 700 /home/alpine/.ssh
+chown alpine /home/alpine/.ssh
+# TODO: Parmaterize public key
+cat > /home/alpine/.ssh/authorized_keys <<EOF
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/TgYMfiySmr2C6eYGxE2R/Icg8L9/yKwESs7h8cgxNo7HuuBnGD/H59ODD6Rvogyo7KiK9VLDwD9a8flu0DePVMS7gY0Tpe0A8oXzIxO9NbC84Siq4Lly03jJW5QM+e0RaOIPd2u7HJ3lVL3liiNof+JgGVuIFZYDO4VVjjLwnncXlFoK8kJlOKk42z2m0H8Qu8BYdj6kRHwXF7WhXTsdgtfxT99YSRH6c8DG2rgwbHmleYstSZ2SC8QQv4BRC7BR0RrNTJLL1SSfBRKTTm9RDRvsot0B2M5otgzM7GgX6iZBTCZi7uVgXWfrBtyX9dHC1kKB7g1lUs/WIz44ZcgoLiPdNN7f7rs5UgBTqLBLK52xWhr8ez4Zm2FEJ3Hsd5ba4aq581NV/oB60X5faCHvsffvB+QUGstj1bm2U6oPfDDeo70HgPgCZ6V8ceDVJEwHxXZvVoyzsOSiZ9j79y9y6curHKVXnldSI5npuiSyZQv/momLowGADdFykRRNMw+iEcW3XDVo3JFT05yG23C34h+sMY3T64spuksH8gIflopzhhiIfijlvzlBbuSkHRp5B2MzYZo18+b2bdBmwB5lspsMkU+qS/F7LkVq/K4z6pk1J5CYeicqnsfpsPayVew0B1FcTlVLeh89Qx7hoy+m60RGnhKDW10Fn5ZM29oX2w== aroxby@users.noreply.github.com
+EOF
+chmod 600 /home/alpine/.ssh/authorized_keys
+chown alpine:alpine /home/alpine/.ssh/authorized_keys
+
+passwd -u alpine  # Enable login (no console password, ssh via key only)
+
+sed -i '/%wheel/s/^# //' /etc/sudoers
+
+lbu exclude \
+    etc/group- etc/passwd- etc/shadow- \
+    etc/apk/keys etc/apk/arch etc/apk/repositories \
+    etc/os-release \
+    etc/issue \
+    etc/alpine-release
+lbu include /home/alpine/.ssh
+lbu package remote.apkovl.tar.gz
+
+CHROOT
+
+mv /tmp/chroot/remote.apkovl.tar.gz /dst
+
+sed -i \
+    -e 's/^set timeout=1/set timeout=0/' \
+    /dst/boot/grub/grub.cfg
+
+xorriso -as mkisofs -o /alpine.iso /dst \
+    -J -J -joliet-long \
+    -isohybrid-mbr dst/boot/syslinux/isohdpfx.bin \
+    -b boot/syslinux/isolinux.bin \
+    -c boot/syslinux/boot.cat \
+    -boot-load-size 4 -boot-info-table -no-emul-boot \
+    -eltorito-alt-boot \
+    -e boot/grub/efi.img \
+    -no-emul-boot -isohybrid-gpt-basdat
