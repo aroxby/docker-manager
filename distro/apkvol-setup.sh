@@ -1,18 +1,28 @@
 #!/bin/sh -e
 
+mkdir /tmp/distro-build
+
 (
-    mkdir /dst
-    cd /dst
-    7z x /src/alpine-virt-${alpine_version}-x86_64.iso > /dev/null
+    mkdir /tmp/distro-build/dst
+    cd /tmp/distro-build/dst
+    7z x /src/alpine-virt.iso > /dev/null
     rm -rf [BOOT]
 )
 
-mkdir /tmp/chroot && tar -C /tmp/chroot -xf /src/alpine-minirootfs-${alpine_version}-x86_64.tar.gz
-cp /etc/resolv.conf /tmp/chroot/etc
+(
+    mkdir /tmp/distro-build/extened
+    cd /tmp/distro-build/extened
+    7z x /src/alpine-extended.iso > /dev/null
+    cp -a apks /tmp/distro-build/dst
+)
 
-chroot /tmp/chroot sh << CHROOT
+mkdir /tmp/distro-build/chroot
+tar -C /tmp/distro-build/chroot -xf /src/alpine-minirootfs.tar.gz
+cp /etc/resolv.conf /tmp/distro-build/chroot/etc
+
+chroot /tmp/distro-build/chroot sh -e << CHROOT
 apk update
-apk add alpine-conf sudo openssh busybox-initscripts
+apk add alpine-conf busybox-initscripts openssh sudo
 
 touch /etc/.default_boot_services
 
@@ -58,15 +68,15 @@ lbu package remote.apkovl.tar.gz
 
 CHROOT
 
-mv /tmp/chroot/remote.apkovl.tar.gz /dst
+mv /tmp/distro-build/chroot/remote.apkovl.tar.gz /tmp/distro-build/dst
 
 sed -i \
     -e 's/^set timeout=1/set timeout=0/' \
-    /dst/boot/grub/grub.cfg
+    /tmp/distro-build/dst/boot/grub/grub.cfg
 
-xorriso -as mkisofs -o /alpine.iso /dst \
+xorriso -as mkisofs -o /alpine.iso /tmp/distro-build/dst \
     -J -J -joliet-long \
-    -isohybrid-mbr dst/boot/syslinux/isohdpfx.bin \
+    -isohybrid-mbr /tmp/distro-build/dst/boot/syslinux/isohdpfx.bin \
     -b boot/syslinux/isolinux.bin \
     -c boot/syslinux/boot.cat \
     -boot-load-size 4 -boot-info-table -no-emul-boot \

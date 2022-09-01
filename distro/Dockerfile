@@ -3,12 +3,20 @@ FROM ubuntu:focal
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get -y install p7zip-full qemu-kvm xorriso
 
-ARG alpine_version=3.16.2
+ARG alpine_major=3.15
+ARG alpine_minor=6
+ARG alpine_mirror_url=https://dl-cdn.alpinelinux.org/alpine
 
-ADD https://dl-4.alpinelinux.org/alpine/latest-stable/releases/x86_64/alpine-virt-${alpine_version}-x86_64.iso /src/
-ADD https://dl-4.alpinelinux.org/alpine/latest-stable/releases/x86_64/alpine-minirootfs-${alpine_version}-x86_64.tar.gz /src/
-# COPY alpine-virt-${alpine_version}-x86_64.iso /src/
-# COPY alpine-minirootfs-${alpine_version}-x86_64.tar.gz /src/
+ADD ${alpine_mirror_url}/v${alpine_major}/releases/x86_64/alpine-virt-${alpine_major}.${alpine_minor}-x86_64.iso \
+    /src/alpine-virt.iso
+ADD ${alpine_mirror_url}/v${alpine_major}/releases/x86_64/alpine-extended-${alpine_major}.${alpine_minor}-x86_64.iso \
+    /src/alpine-extended.iso
+ADD ${alpine_mirror_url}/v${alpine_major}/releases/x86_64/alpine-minirootfs-${alpine_major}.${alpine_minor}-x86_64.tar.gz \
+    /src/alpine-minirootfs.tar.gz
+
+# COPY alpine-virt-${alpine_major}.${alpine_minor}-x86_64.iso /src/alpine-virt.iso
+# COPY alpine-extended-${alpine_major}.${alpine_minor}-x86_64.iso /src/alpine-extended.iso
+# COPY alpine-minirootfs-${alpine_major}.${alpine_minor}-x86_64.tar.gz /src/alpine-minirootfs.tar.gz
 
 COPY apkvol-setup.sh /src/
 RUN /src/apkvol-setup.sh
