@@ -71,7 +71,7 @@ CHROOT
 mv /tmp/distro-build/chroot/remote.apkovl.tar.gz /tmp/distro-build/dst
 
 sed -i \
-    -e 's/^set timeout=1/set timeout=0/' \
+    -e 's/^set timeout=[0-9]\+/set timeout=0/' \
     /tmp/distro-build/dst/boot/grub/grub.cfg
 
 xorriso -as mkisofs -o /alpine.iso /tmp/distro-build/dst \
