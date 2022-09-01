@@ -43,6 +43,7 @@ ln -s /etc/init.d/sshd /etc/runlevels/default/
 adduser -D -s /bin/sh alpine
 addgroup alpine wheel
 
+chown alpine /home/alpine
 mkdir /home/alpine/.ssh
 chmod 700 /home/alpine/.ssh
 chown alpine /home/alpine/.ssh
