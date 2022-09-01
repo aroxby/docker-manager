@@ -83,3 +83,5 @@ xorriso -as mkisofs -o /alpine.iso /tmp/distro-build/dst \
     -eltorito-alt-boot \
     -e boot/grub/efi.img \
     -no-emul-boot -isohybrid-gpt-basdat
+
+rm -rf /tmp/distro-build

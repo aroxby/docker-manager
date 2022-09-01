@@ -20,5 +20,6 @@ ADD ${alpine_mirror_url}/v${alpine_major}/releases/x86_64/alpine-minirootfs-${al
 
 COPY apkvol-setup.sh /src/
 RUN /src/apkvol-setup.sh
+RUN rm -rf /src
 
 CMD qemu-system-x86_64 -bios /usr/share/ovmf/OVMF.fd -m 4096 -cdrom /alpine.iso -net nic -net user,hostfwd=tcp::2222-:22
