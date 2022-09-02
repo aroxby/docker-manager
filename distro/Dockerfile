@@ -22,4 +22,10 @@ COPY apkvol-setup.sh /src/
 RUN /src/apkvol-setup.sh
 RUN rm -rf /src
 
-CMD qemu-system-x86_64 -bios /usr/share/ovmf/OVMF.fd -m 4096 -cdrom /alpine.iso -net nic -net user,hostfwd=tcp::2222-:22
+CMD qemu-img create -f qcow2 sda.img 100G && qemu-system-x86_64 \
+    -smp 4 \
+    -m 8192 \
+    -bios /usr/share/ovmf/OVMF.fd \
+    -drive file=sda.img,format=qcow2 \
+    -cdrom /alpine.iso \
+    -nic user,hostfwd=tcp::2222-:22
