@@ -35,8 +35,8 @@ APKREPOSOPTS="-1"
 # Install Openssh
 SSHDOPTS="-c openssh"
 
-# Use openntpd
-NTPOPTS=none
+# Do not use NTP with virtual machines
+NTPOPTS="-c none"
 
 # Use /dev/sda as a data disk
 DISKOPTS="-m sys /dev/sda"
