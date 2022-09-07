@@ -73,14 +73,7 @@ sed -i \
     -e 's/^set timeout=[0-9]\+/set timeout=0/' \
     /tmp/distro-build/dst/boot/grub/grub.cfg
 
-xorriso -as mkisofs -o /alpine.iso /tmp/distro-build/dst \
-    -J -J -joliet-long \
-    -isohybrid-mbr /tmp/distro-build/dst/boot/syslinux/isohdpfx.bin \
-    -b boot/syslinux/isolinux.bin \
-    -c boot/syslinux/boot.cat \
-    -boot-load-size 4 -boot-info-table -no-emul-boot \
-    -eltorito-alt-boot \
-    -e boot/grub/efi.img \
-    -no-emul-boot -isohybrid-gpt-basdat
+mkfs.fat -CF 32 /alpine-usb.img $((600 * 1024))
+mcopy -s -i /alpine-usb.img /tmp/distro-build/dst/* ::/
 
 rm -rf /tmp/distro-build

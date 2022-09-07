@@ -1,7 +1,7 @@
 FROM ubuntu:focal
 
 ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update && apt-get -y install p7zip-full qemu-kvm xorriso
+RUN apt-get update && apt-get -y install dosfstools mtools p7zip-full qemu-kvm
 
 ARG alpine_major=3.15
 ARG alpine_minor=6
@@ -27,5 +27,7 @@ CMD qemu-img create -f qcow2 sda.img 100G && qemu-system-x86_64 \
     -m 8192 \
     -bios /usr/share/ovmf/OVMF.fd \
     -drive file=sda.img,format=qcow2 \
-    -cdrom /alpine.iso \
+    -drive file=/alpine-usb.img,format=raw,readonly,if=none,id=alpine-usb \
+    -usb \
+    -device usb-storage,drive=alpine-usb \
     -nic user,hostfwd=tcp::2222-:22
