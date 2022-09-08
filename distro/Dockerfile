@@ -1,7 +1,7 @@
-FROM ubuntu:focal
+FROM alpine:3
 
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update && apt-get -y install dosfstools mtools p7zip-full qemu-kvm
+# qemu-ui-gtk is still needed for qemu-ui-sdl to work for some reason
+RUN apk add dosfstools mtools p7zip qemu qemu-img qemu-system-x86_64 qemu-ui-gtk qemu-ui-sdl
 
 ARG alpine_major=3.15
 ARG alpine_minor=6
@@ -23,11 +23,12 @@ RUN /src/apkvol-setup.sh
 RUN rm -rf /src
 
 CMD qemu-img create -f qcow2 sda.img 100G && qemu-system-x86_64 \
+    -display sdl \
     -smp 4 \
     -m 8192 \
-    -bios /usr/share/ovmf/OVMF.fd \
+    -drive file=/usr/share/qemu/edk2-x86_64-code.fd,if=pflash,format=raw \
     -drive file=sda.img,format=qcow2 \
-    -drive file=/alpine-usb.img,format=raw,readonly,if=none,id=alpine-usb \
+    -drive file=/alpine-usb.img,format=raw,readonly=on,if=none,id=alpine-usb \
     -usb \
     -device usb-storage,drive=alpine-usb \
     -nic user,hostfwd=tcp::2222-:22
