@@ -28,7 +28,7 @@ CMD qemu-img create -f qcow2 sda.img 100G && qemu-system-x86_64 \
     -m 8192 \
     -drive file=/usr/share/qemu/edk2-x86_64-code.fd,if=pflash,format=raw \
     -drive file=sda.img,format=qcow2 \
-    -drive file=/alpine-usb.img,format=raw,readonly=on,if=none,id=alpine-usb \
+    -drive file=/alpine-usb.vdi,format=vdi,readonly=on,if=none,id=alpine-usb \
     -usb \
     -device usb-storage,drive=alpine-usb \
     -nic user,hostfwd=tcp::2222-:22

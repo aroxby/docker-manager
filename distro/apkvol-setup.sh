@@ -73,7 +73,9 @@ sed -i \
     -e 's/^set timeout=[0-9]\+/set timeout=0/' \
     /tmp/distro-build/dst/boot/grub/grub.cfg
 
-mkfs.fat -CF 32 /alpine-usb.img $((600 * 1024))
-mcopy -s -i /alpine-usb.img /tmp/distro-build/dst/* ::/
+mkfs.fat -CF 32 /tmp/distro-build/alpine-usb.img $((600 * 1024))
+mcopy -s -i /tmp/distro-build/alpine-usb.img /tmp/distro-build/dst/* ::/
+
+qemu-img convert -f raw -O vdi /tmp/distro-build/alpine-usb.img /alpine-usb.vdi
 
 rm -rf /tmp/distro-build
