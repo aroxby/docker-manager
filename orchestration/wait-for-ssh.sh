@@ -5,7 +5,7 @@ ssh_up() {
     [ $? -eq 1 ]
 }
 
-VM_IP=$(./get-ip.sh)
+VM_IP=$(./wait-for-ip.sh | tee /dev/stderr | tail -n1)
 
 echo Waiting for ssh...
 
