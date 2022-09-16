@@ -1,8 +1,10 @@
 #!/bin/sh -e
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 MACHINE_NAME=docker-manager-1
 HOST_TO_GUEST_REDUCTION=4
-INSTALL_VDI=../distro/alpine-usb.vdi
+INSTALL_VDI=${SCRIPT_DIR}/../distro/alpine-usb.vdi
 TARGET_VDI_NAME=$MACHINE_NAME.vdi
 TARGET_VDI_MAX_SIZE_GB=100
 
