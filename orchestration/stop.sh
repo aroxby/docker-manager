@@ -1,7 +1,5 @@
 #!/bin/sh -e
 
-# FIXME: Current distro doesn't run acpid
-
 MACHINE_NAME=docker-manager-1
 SHUTDOWN_WAIT=10
 

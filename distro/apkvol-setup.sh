@@ -39,6 +39,7 @@ EOF
 
 ln -s /etc/init.d/networking /etc/runlevels/default/
 ln -s /etc/init.d/sshd /etc/runlevels/default/
+ln -s /etc/init.d/acpid /etc/runlevels/default/
 
 adduser -D -s /bin/sh alpine
 addgroup alpine wheel
