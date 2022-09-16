@@ -64,11 +64,11 @@ lbu exclude \
     etc/issue \
     etc/alpine-release
 lbu include /home/alpine
-lbu package remote.apkovl.tar.gz
+lbu package docker-manager.apkovl.tar.gz
 
 CHROOT
 
-mv /tmp/distro-build/chroot/remote.apkovl.tar.gz /tmp/distro-build/dst
+mv /tmp/distro-build/chroot/docker-manager.apkovl.tar.gz /tmp/distro-build/dst
 
 sed -i \
     -e 's/^set timeout=[0-9]\+/set timeout=0/' \
