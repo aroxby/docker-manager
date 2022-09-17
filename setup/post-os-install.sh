@@ -9,4 +9,4 @@ sed -i \
 umount /dev/sda3
 
 apk add efibootmgr
-efibootmgr --bootnext 0000
+efibootmgr --bootnext 0001
