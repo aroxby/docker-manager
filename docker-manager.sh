@@ -35,8 +35,15 @@ install_docker() {
 
     get_vm_ip
     scp $SSH_OPTS setup/install-docker.sh $BOOTSTRAP_USER@$VM_IP:/tmp
-    # Don't ask me why the first space needs escaped.  I really don't know
     ssh $SSH_OPTS $BOOTSTRAP_USER@$VM_IP sh -c "sudo\ /tmp/install-docker.sh"
+}
+
+replace_keys() {
+    local SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+    get_vm_ip
+    scp $SSH_OPTS setup/replace-keys.sh $BOOTSTRAP_USER@$VM_IP:/tmp
+    ssh $SSH_OPTS $BOOTSTRAP_USER@$VM_IP sh -c "sudo\ /tmp/replace-keys.sh"
 }
 
 docker_env() {
@@ -51,4 +58,4 @@ docker_env() {
     echo export DOCKER_HOST="ssh://$DOCKER_USER@$VM_IP"
 }
 
-create_vm && provision_vm && install_docker && docker_env
+create_vm && provision_vm && install_docker && replace_keys && docker_env
