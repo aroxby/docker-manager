@@ -7,10 +7,11 @@ DOCKER_USER=docker-manager
 
 create_vm() {
     orchestration/create.sh
-    orchestration/start.sh
+    orchestration/wait-for-start.sh
 }
 
 get_vm_ip() {
+    orchestration/wait-for-start.sh
     # TODO: This feels very brittle
     VM_IP=$(orchestration/wait-for-ssh.sh 2>&1 | tee /dev/stderr | head -n-1 | tail -n1)
     if [ -z "$VM_IP" ]; then
