@@ -6,8 +6,8 @@ cat > /tmp/os-install-answers.txt << EOF
 # Use US layout with US variant
 KEYMAPOPTS="us us"
 
-# Set hostname to alpine-test
-HOSTNAMEOPTS="-n alpine-test"
+# Set hostname to docker-manager
+HOSTNAMEOPTS="-n docker-manager"
 
 # Contents of /etc/network/interfaces
 INTERFACESOPTS="auto lo
