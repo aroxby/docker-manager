@@ -12,7 +12,6 @@ create_vm() {
 
 get_vm_ip() {
     # TODO: This feels very brittle
-    # TODO: Show the "Waiting for ..." messages
     VM_IP=$(orchestration/wait-for-ssh.sh 2>&1 | tee /dev/stderr | head -n-1 | tail -n1)
     if [ -z "$VM_IP" ]; then
         echo VM did not start ssh >&2
