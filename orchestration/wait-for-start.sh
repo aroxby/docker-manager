@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "$0" )" 1>/dev/null 2>&1 /dev/null && pwd )
+SCRIPT_DIR=$( cd -- "$( dirname -- "$0" )" 1>/dev/null 2>&1 && pwd )
 MACHINE_NAME=docker-manager-1
 
 box_up() {
