@@ -1,23 +1,23 @@
 #!/bin/sh -e
 
-mkdir /tmp/distro-build
+mkdir -p /tmp/distro-build/src
 
 (
     mkdir /tmp/distro-build/dst
     cd /tmp/distro-build/dst
-    7z x /src/alpine-virt.iso > /dev/null
+    7z x /tmp/distro-build/src/alpine-virt.iso > /dev/null
     rm -rf [BOOT]
 )
 
 (
     mkdir /tmp/distro-build/extened
     cd /tmp/distro-build/extened
-    7z x /src/alpine-extended.iso > /dev/null
+    7z x /tmp/distro-build/src/alpine-extended.iso > /dev/null
     cp -a apks /tmp/distro-build/dst
 )
 
 mkdir /tmp/distro-build/chroot
-tar -C /tmp/distro-build/chroot -xf /src/alpine-minirootfs.tar.gz
+tar -C /tmp/distro-build/chroot -xf /tmp/distro-build/src/alpine-minirootfs.tar.gz
 cp /etc/resolv.conf /tmp/distro-build/chroot/etc
 
 chroot /tmp/distro-build/chroot sh -e << CHROOT
@@ -77,6 +77,6 @@ sed -i \
 mkfs.fat -CF 32 /tmp/distro-build/alpine-usb.img $((600 * 1024))
 mcopy -s -i /tmp/distro-build/alpine-usb.img /tmp/distro-build/dst/* ::/
 
-qemu-img convert -f raw -O vdi /tmp/distro-build/alpine-usb.img /alpine-usb.vdi
+qemu-img convert -f raw -O vdi /tmp/distro-build/alpine-usb.img ~/alpine-usb.vdi
 
 rm -rf /tmp/distro-build
